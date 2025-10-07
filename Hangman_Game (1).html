@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hangman Game</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #f7fff7;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      color: green;
+    }
+    pre {
+      font-size: 16px;
+      color: #444;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 5px;
+      margin: 10px 5px 0 0;
+    }
+    #result {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1> Hangman Game</h1>
+  <pre id="hangman"></pre>
+  <p id="wordDisplay"></p>
+  <p>Guessed letters: <span id="guessedLetters"></span></p>
+  <input type="text" id="guessInput" maxlength="1" placeholder="Enter a letter" />
+  <button onclick="handleGuess()">Guess</button>
+  <p id="result"></p>
+
+<script>
+  const hangmanPics = [
+    `  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+ /|\\  |
+ /    |
+      |
+=========`,
+    `  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========`
+  ];
+
+  const words = ["You are gay"];
+  let secretWord = words[Math.floor(Math.random() * words.length)];
+  let guessedLetters = [];
+  let incorrectGuesses = 0;
+  const maxGuesses = hangmanPics.length - 1;
+
+  function updateDisplay() {
+    document.getElementById("hangman").textContent = hangmanPics[incorrectGuesses];
+
+    let displayWord = "";
+    for (let letter of secretWord) {
+      displayWord += guessedLetters.includes(letter) ? letter + " " : "_ ";
+    }
+    document.getElementById("wordDisplay").textContent = "Word: " + displayWord.trim();
+    document.getElementById("guessedLetters").textContent = guessedLetters.join(" ");
+
+    if (incorrectGuesses >= maxGuesses) {
+      document.getElementById("result").textContent = "❌ Game Over! The word was: " + secretWord;
+      document.getElementById("guessInput").disabled = true;
+    } else if (secretWord.split('').every(l => guessedLetters.includes(l))) {
+      document.getElementById("result").textContent = "🎉 You won! The word was: " + secretWord;
+      document.getElementById("guessInput").disabled = true;
+    }
+  }
+
+  function handleGuess() {
+    const input = document.getElementById("guessInput");
+    const guess = input.value.toLowerCase();
+    input.value = "";
+
+    if (!guess.match(/[a-z]/) || guess.length !== 1) {
+      alert("Please enter a single letter.");
+      return;
+    }
+
+    if (guessedLetters.includes(guess)) {
+      alert("You already guessed that letter.");
+      return;
+    }
+
+    guessedLetters.push(guess);
+    if (!secretWord.includes(guess)) {
+      incorrectGuesses++;
+    }
+
+    updateDisplay();
+  }
+
+  updateDisplay();
+</script>
+</body>
+</html>
